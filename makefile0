@@ -1,0 +1,33 @@
+TARGET := arcanoid-exec
+CXX := g++
+DEFS := 
+CXX_FLAGS := -std=c++17 -Wno-deprecated-declarations
+
+# choose link flags depends on OS
+LNK_LINUX := -lGL -lGLU -lglut
+LNK_MAC_OS := -framework OpenGL -framework GLUT
+LINK_FLAGS := ${LNK_MAC_OS}   
+
+INCLUDES := headers
+
+SRC := ball.cpp block.cpp bonus.cpp circle.cpp color.cpp field.cpp figure.cpp game.cpp platform.cpp rectangle.cpp text.cpp vector.cpp	 
+SRC := $(addprefix src/, $(SRC))
+SOURCES := main.cpp ${SRC}
+
+OBJECTS := $(notdir $(SOURCES:.cpp=.o))
+DEPENDS := $(notdir $(SOURCES:.cpp=.d))
+
+VPATH := $(dir $(SOURCES))
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CXX) -o $@ $(OBJECTS) $(LINK_FLAGS)
+
+%.o: %.cpp 
+	$(CXX) -o $@ -c $< $(DEFS) $(CXX_FLAGS) $(addprefix -I,$(INCLUDES))
+
+.PHONY: clean
+
+clean: 
+	rm -rf $(TARGET) $(OBJECTS) $(notdir $(DEPENDS))
